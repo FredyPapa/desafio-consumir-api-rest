@@ -1,0 +1,19 @@
+<h1 mat-dialog-title appDirectiveTitle><strong>PROYECTO:</strong> {{project.description}}</h1>
+<div mat-dialog-content>
+    <div>
+        <div class="row">
+            <div class="col-6">
+                <strong>Fecha de Inicio:</strong> {{ project.startDate | date: 'dd/MM/YYYY' }}
+            </div>
+            <div class="col-6">
+                <strong>Fecha de Fin:</strong> {{ project.finishDate | date: 'dd/MM/YYYY' }}
+            </div>
+            <div class="col-12">
+                <strong>Estado:</strong> {{ project.status | statusProject}}
+            </div>
+        </div>
+    </div>
+    <div class="row  justify-content-md-center">
+        <button mat-raised-button color="warn" mat-dialog-close> Cerrar</button>
+    </div>
+</div>

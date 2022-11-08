@@ -1,0 +1,37 @@
+<h1 mat-dialog-title appDirectiveTitle><strong>PROGRAMACIÓN DEL PROYECTO:</strong></h1>
+<div mat-dialog-content>
+    <div>
+        <div class="row">
+            <div class="col-12">
+              <strong>Proyecto:</strong> {{programming.project.description}}
+            </div>
+            <div class="col-6">
+              <strong>Fecha de Inicio:</strong> {{ programming.project.startDate | date: 'dd/MM/YYYY' }}
+            </div>
+            <div class="col-6">
+              <strong>Fecha de Fin:</strong> {{ programming.project.finishDate | date: 'dd/MM/YYYY' }}
+            </div>
+            <div class="col-6">
+              <strong>Estado del proyecto:</strong> {{ programming.project.status | statusProject }}
+            </div>
+            <div class="col-6">
+              <strong>Comentarios:</strong> {{ programming.comment }}
+            </div>
+            <div class="col-12">
+              <strong>Equipo de Desarrollo:</strong>
+            </div>
+            <div class="col-4" *ngFor="let developer of programming.developers">
+                <img [src]="developer.photo" alt="Desarrollador">
+                <p><strong>Nombre:</strong> {{ developer.firstName }}</p>
+                <p><strong>Apellido:</strong> {{ developer.lastName }}</p>
+                <p><strong>Fecha de contrato:</strong> {{ developer.contractDate }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="row  justify-content-md-center">
+        <button mat-raised-button color="warn" mat-dialog-close> Cerrar</button>
+    </div>
+</div>
+
+
+

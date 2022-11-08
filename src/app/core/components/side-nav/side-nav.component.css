@@ -1,0 +1,19 @@
+.example-container {
+  width: 250px;
+  height: 90vh;
+}
+
+.sidenav-style {
+  display: flex;
+  height: 100%;
+  align-items:flex-start;
+  justify-content:flex-start;
+  background-color: white;
+}
+
+ul{
+  list-style: none;
+}
+li{
+  margin-bottom: 10px;
+}
