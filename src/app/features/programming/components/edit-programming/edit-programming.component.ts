@@ -52,7 +52,7 @@ export class EditProgrammingComponent implements OnInit, OnDestroy {
     });
       //Form
       this.formProgramming = new FormGroup({
-      project: new FormControl(this.programming.project.id, [Validators.required]),
+      project: new FormControl(this.programming.project, [Validators.required]),
       developers: new FormControl(this.programming.developers, [Validators.required]),
       comment: new FormControl(this.programming.comment, [Validators.required]),
     })
@@ -60,7 +60,6 @@ export class EditProgrammingComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    //this.formProgramming.setValue({project:this.programming.project,developers:this.programming.developers, comment:this.programming.comment});
   }
 
   ngOnDestroy():void{
@@ -78,6 +77,10 @@ export class EditProgrammingComponent implements OnInit, OnDestroy {
     }
     this.programmingService.editProgramming(programming);
     this.router.navigate(['features/programming']);
+  }
+
+  compareWithFn(item1:any, item2:any){
+    return item1 && item2 ? item1.id === item2.id : item1===item2;
   }
 
 }
