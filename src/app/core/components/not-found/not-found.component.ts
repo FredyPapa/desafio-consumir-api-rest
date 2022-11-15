@@ -7,6 +7,8 @@ import { Component, OnInit } from '@angular/core';
 })
 export class NotFoundComponent implements OnInit {
 
+  pageNotFound:string="./assets/img/page-not-found.png";
+
   constructor() { }
 
   ngOnInit(): void {

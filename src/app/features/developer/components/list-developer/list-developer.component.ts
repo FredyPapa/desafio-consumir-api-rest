@@ -1,49 +1,35 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { Developer } from '../../../../models/developer';
-import { Observable, Subscription, map } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { DeveloperService } from '../../services/developer.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ViewDeveloperComponent } from '../view-developer/view-developer.component';
+import { MatSort } from '@angular/material/sort';
 
 @Component({
   selector: 'app-list-developer',
   templateUrl: './list-developer.component.html',
   styleUrls: ['./list-developer.component.css']
 })
-export class ListDeveloperComponent implements OnInit {
-  listDevelopers$!:Observable<Developer[]>;
-  listDevelopers!:Array<Developer>;
+export class ListDeveloperComponent implements OnInit, OnDestroy {
   subscription!:Subscription;
   //
   displayedColumns: string[] = ['id', 'firstName', 'lastName', 'contractDate','actions'];
-  dataSource!:MatTableDataSource<Developer>;
+  dataSource:MatTableDataSource<Developer> = new MatTableDataSource<Developer>();
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!:MatSort;
 
   constructor(
     private developerService:DeveloperService,
     private router:Router,
     private dialog:MatDialog
-  ) {
-    this.listDevelopers$ = this.developerService.getDevelopers().pipe(
-      map((developers:Developer[])=>
-      developers.filter((developer:Developer)=>developer.deleted===false)
-      )
-    );
-    this.subscription=this.listDevelopers$.subscribe({
-      next:(developers:Developer[])=>{
-        this.listDevelopers=developers;
-      },
-      error:(error)=>{
-        console.log(error);
-      }
-    });
-    this.dataSource = new MatTableDataSource<Developer>(this.listDevelopers);
-  }
+  ) { }
 
   ngOnInit(): void {
+    this.getDevelopers();
   }
 
   ngOnDestroy():void{
@@ -52,6 +38,13 @@ export class ListDeveloperComponent implements OnInit {
 
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+
+  getDevelopers(){
+    this.subscription = this.developerService.getDevelopers().subscribe(response=>{
+      this.dataSource.data = response;
+    });
   }
 
   getDeveloper(developer:Developer){
@@ -69,9 +62,9 @@ export class ListDeveloperComponent implements OnInit {
   deleteDeveloper(id:number){
     if (confirm('Esta seguro que desea eliminar el registro?')) {
       this.developerService.deleteDeveloper(id);
+      this.getDevelopers();
       alert("El registro fue eliminado con éxito");
     }
-    this.dataSource = new MatTableDataSource<Developer>(this.listDevelopers);
   }
 
 }

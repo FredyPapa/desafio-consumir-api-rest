@@ -1,30 +1,32 @@
-<mat-drawer-container class="example-container" autosize>
-  <mat-drawer #drawer class="example-sidenav" mode="side">
-    <mat-selection-list [multiple]="false">
-      <mat-list-option routerLink="">
-        <mat-icon mat-list-icon>folder</mat-icon>
-        Inicio
-      </mat-list-option>
-      <mat-list-option routerLink="/features/project">
-        <mat-icon mat-list-icon>folder</mat-icon>
-        Proyectos
-      </mat-list-option>
-      <mat-list-option routerLink="/features/developer">
-        <mat-icon mat-list-icon>folder</mat-icon>
-        Desarrolladores
-      </mat-list-option>
-      <mat-list-option routerLink="/features/programming">
-        <mat-icon mat-list-icon>folder</mat-icon>
-        Programación
-      </mat-list-option>
-    </mat-selection-list>
-  </mat-drawer>
+<ng-container *ngIf="session$ | async as sesion">
+  <div *ngIf="sesion.activeSession">
+    <mat-drawer-container class="example-container" autosize>
+      <mat-drawer #drawer class="example-sidenav" mode="side">
+        <mat-selection-list [multiple]="false">
+          <mat-list-option routerLink="/home">
+            <mat-icon mat-list-icon>folder</mat-icon>
+            Inicio
+          </mat-list-option>
+          <mat-list-option routerLink="/features/project">
+            <mat-icon mat-list-icon>folder</mat-icon>
+            Proyectos
+          </mat-list-option>
+          <mat-list-option routerLink="/features/developer">
+            <mat-icon mat-list-icon>folder</mat-icon>
+            Desarrolladores
+          </mat-list-option>
+          <mat-list-option routerLink="/features/programming">
+            <mat-icon mat-list-icon>folder</mat-icon>
+            Programación
+          </mat-list-option>
+        </mat-selection-list>
+      </mat-drawer>
 
-  <div class="sidenav-style">
-    <button mat-icon-button color="primary" (click)="drawer.toggle()">
-      <mat-icon>menu</mat-icon>
-    </button>
+      <div class="sidenav-style">
+        <button mat-icon-button color="primary" (click)="drawer.toggle()">
+          <mat-icon>menu</mat-icon>
+        </button>
+      </div>
+    </mat-drawer-container>
   </div>
-
-</mat-drawer-container>
-
+</ng-container>

@@ -9,7 +9,6 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { ProjectRoutingModule } from './project-routing.module';
 
 
-
 @NgModule({
   declarations: [
     ViewProjectComponent,
@@ -21,7 +20,7 @@ import { ProjectRoutingModule } from './project-routing.module';
   imports: [
     CommonModule,
     ProjectRoutingModule,
-    SharedModule
+    SharedModule,
   ]
 })
 export class ProjectModule { }

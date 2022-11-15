@@ -1,47 +1,66 @@
 import { Injectable } from '@angular/core';
-import { ListDevelopers } from 'src/app/mocks/dataDeveloper';
 import { Developer } from '../../../models/developer';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable, catchError, throwError } from 'rxjs';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DeveloperService {
-  listDevelopers:Developer[] = ListDevelopers;
-  private developerSubject:BehaviorSubject<Developer[]>;
+  listDevelopers!:Developer[];
 
-  constructor() {
-    this.developerSubject = new BehaviorSubject<Developer[]>(this.listDevelopers);
-  }
+  constructor(
+    private http:HttpClient
+  ) { }
 
   getDevelopers():Observable<Developer[]>{
-    return this.developerSubject.asObservable();
+    return this.http.get<Developer[]>(`${environment.api}/developer`, {
+      headers: new HttpHeaders({
+        'content-type': 'application/json',
+        'encoding': 'UTF-8'
+      })
+    }).pipe(
+      catchError(this.manejarError)
+    )
   }
 
-  getDeveloper(id:number):Developer{
-    let index = this.listDevelopers.findIndex((item: Developer) => item.id === id);
-    return this.listDevelopers[index];
+  getDeveloper(id:number):Observable<Developer>{
+    return this.http.get<Developer>(`${environment.api}/developer/${id}`,{
+      headers:new HttpHeaders({
+        'content-type': 'application/json',
+        'encoding': 'UTF-8'
+      })
+    }).pipe(
+      catchError(this.manejarError)
+    )
   }
 
   deleteDeveloper(id:number){
-    let index = this.listDevelopers.findIndex((item: Developer) => item.id ===id);
-    if(index > -1){
-      this.listDevelopers[index].deleted = true;
-    }
-    this.developerSubject.next(this.listDevelopers);
+    this.http.delete<Developer>(`${environment.api}/developer/${id}`).pipe(
+      catchError(this.manejarError)
+    ).subscribe(console.log);
   }
 
   addDeveloper(developer:Developer){
-    this.listDevelopers.push(developer);
-    this.developerSubject.next(this.listDevelopers);
+    this.http.post<Developer>(`${environment.api}/developer/`, developer).pipe(
+      catchError(this.manejarError)
+    ).subscribe(console.log);
   }
 
   editDeveloper(developer:Developer){
-    let index = this.listDevelopers.findIndex((item: Developer) => item.id === developer.id);
-    if(index > -1){
-      this.listDevelopers[index] = developer;
+    this.http.put<Developer>(`${environment.api}/developer/${developer.id}`, developer).pipe(
+      catchError(this.manejarError)
+    ).subscribe(console.log);
+  }
+
+  private manejarError(error: HttpErrorResponse){
+    if(error.error instanceof ErrorEvent){
+      console.warn('Error del lado del cliente', error.error.message);
+    }else{
+      console.warn('Error del lado del servidor', error.error.message);
     }
-    this.developerSubject.next(this.listDevelopers);
+    return throwError(() => new Error('Error en la comunicacion HTTP'));
   }
 
 }

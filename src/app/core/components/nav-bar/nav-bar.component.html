@@ -2,8 +2,12 @@
   <div class="container-fluid">
   <img [src]="logo" alt="Logo">
   <h1 class="navbar-brand">Sistema de Administración de Proyectos de Desarrollo de Software</h1>
-    <form class="d-flex">
-      <button class="btn btn-secondary my-2 my-sm-0" type="submit">Cerrar sesión</button>
-    </form>
+    <ng-container *ngIf="session$ | async as sesion">
+      <div *ngIf="sesion.activeSession">
+        <form class="d-flex">
+          <button class="btn btn-secondary my-2 my-sm-0" type="submit">Cerrar sesión</button>
+        </form>
+      </div>
+    </ng-container>
   </div>
 </nav>

@@ -1,47 +1,66 @@
 import { Injectable } from '@angular/core';
 import { Programming } from '../../../models/programming';
-import { ListProgrammings } from '../../../mocks/dataProgramming';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { Observable, catchError, throwError } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProgrammingService {
-  listProgrammings:Programming[] = ListProgrammings;
-  private programmingSubject:BehaviorSubject<Programming[]>;
+  listProgrammings!:Programming[];
 
-  constructor() {
-    this.programmingSubject = new BehaviorSubject<Programming[]>(this.listProgrammings);
-  }
+  constructor(
+    private http:HttpClient
+  ) { }
 
   getProgrammings():Observable<Programming[]>{
-    return this.programmingSubject.asObservable();
+    return this.http.get<Programming[]>(`${environment.api}/programming`, {
+      headers: new HttpHeaders({
+        'content-type': 'application/json',
+        'encoding': 'UTF-8'
+      })
+    }).pipe(
+      catchError(this.manejarError)
+    )
   }
 
-  getProgramming(id:number):Programming{
-    let index = this.listProgrammings.findIndex((item: Programming) => item.id === id);
-    return this.listProgrammings[index];
+  getProgramming(id:number):Observable<Programming>{
+    return this.http.get<Programming>(`${environment.api}/programming/${id}`,{
+      headers:new HttpHeaders({
+        'content-type': 'application/json',
+        'encoding': 'UTF-8'
+      })
+    }).pipe(
+      catchError(this.manejarError)
+    )
   }
 
   deleteProgramming(id:number){
-    let index = this.listProgrammings.findIndex((item: Programming) => item.id ===id);
-    if(index > -1){
-      this.listProgrammings[index].deleted = true;
-    }
-    this.programmingSubject.next(this.listProgrammings);
+    this.http.delete<Programming>(`${environment.api}/programming/${id}`).pipe(
+      catchError(this.manejarError)
+    ).subscribe(console.log);
   }
 
   addProgramming(programming:Programming){
-    this.listProgrammings.push(programming);
-    this.programmingSubject.next(this.listProgrammings);
+    this.http.post<Programming>(`${environment.api}/programming/`, programming).pipe(
+      catchError(this.manejarError)
+    ).subscribe(console.log);
   }
 
   editProgramming(programming:Programming){
-    let index = this.listProgrammings.findIndex((item: Programming) => item.id === programming.id);
-    if(index > -1){
-      this.listProgrammings[index] = programming;
+    this.http.put<Programming>(`${environment.api}/programming/${programming.id}`, programming).pipe(
+      catchError(this.manejarError)
+    ).subscribe(console.log);
+  }
+
+  private manejarError(error: HttpErrorResponse){
+    if(error.error instanceof ErrorEvent){
+      console.warn('Error del lado del cliente', error.error.message);
+    }else{
+      console.warn('Error del lado del servidor', error.error.message);
     }
-    this.programmingSubject.next(this.listProgrammings);
+    return throwError(() => new Error('Error en la comunicacion HTTP'));
   }
 
 }

@@ -7,6 +7,7 @@ import { ProgrammingService } from '../../services/programming.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ViewProgrammingComponent } from '../view-programming/view-programming.component';
+import { MatSort } from '@angular/material/sort';
 
 @Component({
   selector: 'app-list-programming',
@@ -14,37 +15,21 @@ import { ViewProgrammingComponent } from '../view-programming/view-programming.c
   styleUrls: ['./list-programming.component.css']
 })
 export class ListProgrammingComponent implements OnInit, OnDestroy {
-
-  listProgrammings$!:Observable<Programming[]>;
-  listProgrammings!:Array<Programming>;
   subscription!:Subscription;
   //
   displayedColumns: string[] = ['id', 'project', 'developers', 'comment','actions'];
-  dataSource!:MatTableDataSource<Programming>;
+  dataSource:MatTableDataSource<Programming>=new MatTableDataSource<Programming>();
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!:MatSort;
 
   constructor(
     private programmingService:ProgrammingService,
     private router:Router,
     private dialog:MatDialog
-  ) {
-    this.listProgrammings$ = this.programmingService.getProgrammings().pipe(
-      map((programmings:Programming[])=>
-      programmings.filter((programming:Programming)=>programming.deleted===false)
-      )
-    );
-    this.subscription=this.listProgrammings$.subscribe({
-      next:(programmings:Programming[])=>{
-        this.listProgrammings=programmings;
-      },
-      error:(error)=>{
-        console.log(error);
-      }
-    });
-    this.dataSource = new MatTableDataSource<Programming>(this.listProgrammings);
-  }
+  ) { }
 
   ngOnInit(): void {
+    this.getProgrammings();
   }
 
   ngOnDestroy():void{
@@ -53,6 +38,13 @@ export class ListProgrammingComponent implements OnInit, OnDestroy {
 
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+
+  getProgrammings(){
+    this.subscription = this.programmingService.getProgrammings().subscribe(response=>{
+      this.dataSource.data = response;
+    });
   }
 
   getProgramming(programming:Programming){
@@ -70,9 +62,9 @@ export class ListProgrammingComponent implements OnInit, OnDestroy {
   deleteProgramming(id:number){
     if (confirm('Esta seguro que desea eliminar el registro?')) {
       this.programmingService.deleteProgramming(id);
+      this.getProgrammings();
       alert("El registro fue eliminado con éxito");
     }
-    this.dataSource = new MatTableDataSource<Programming>(this.listProgrammings);
   }
 
 }

@@ -1,8 +1,7 @@
 export interface Project {
-  id: number,
+  id?: number,
   description: string,
   startDate: Date,
   finishDate: Date,
-  status: number,
-  deleted: boolean
+  status: number
 }

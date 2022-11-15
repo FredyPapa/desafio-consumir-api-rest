@@ -20,8 +20,9 @@ export class EditProgrammingComponent implements OnInit, OnDestroy {
   programming!:Programming;
   projects!:Project[];
   developers!:Developer[];
-  subscriptionProject:Subscription;
-  subscriptionDeveloper:Subscription;
+  subscriptionProgramming!:Subscription;
+  subscriptionProject!:Subscription;
+  subscriptionDeveloper!:Subscription;
 
   constructor(
     private programmingService: ProgrammingService,
@@ -31,38 +32,36 @@ export class EditProgrammingComponent implements OnInit, OnDestroy {
     private activatedroute:ActivatedRoute,
   ) {
       this.id = Number(this.activatedroute.snapshot.paramMap.get("id"));
-      this.programming = programmingService.getProgramming(this.id);
       //Projects
-    this.subscriptionProject = this.projectService.getProjects().subscribe({
-      next: (item: Project[]) => {
-        this.projects = item;
-      },
-      error: (error) => {
-        console.error(error);
-      }
-    });
-    //Developers
-    this.subscriptionDeveloper = this.developerService.getDevelopers().subscribe({
-      next: (item: Developer[]) => {
-        this.developers = item;
-      },
-      error: (error) => {
-        console.error(error);
-      }
-    });
+      this.subscriptionProject = this.projectService.getProjects().subscribe(response=>{
+        this.projects = response;
+      });
+      //Developers
+      this.subscriptionDeveloper = this.developerService.getDevelopers().subscribe(response=>{
+        this.developers = response;
+      });
       //Form
       this.formProgramming = new FormGroup({
-      project: new FormControl(this.programming.project, [Validators.required]),
-      developers: new FormControl(this.programming.developers, [Validators.required]),
-      comment: new FormControl(this.programming.comment, [Validators.required]),
+      project: new FormControl('', [Validators.required]),
+      developers: new FormControl('', [Validators.required]),
+      comment: new FormControl('', [Validators.required]),
     })
 
   }
 
   ngOnInit(): void {
+    this.subscriptionProgramming = this.programmingService.getProgramming(this.id).subscribe(response=>{
+      this.programming=response;
+      this.formProgramming.setValue({
+        project: this.programming.project,
+        developers: this.programming.developers,
+        comment: this.programming.comment,
+      })
+    });
   }
 
   ngOnDestroy():void{
+    this.subscriptionProgramming.unsubscribe();
     this.subscriptionProject.unsubscribe();
     this.subscriptionDeveloper.unsubscribe();
   }
@@ -73,14 +72,18 @@ export class EditProgrammingComponent implements OnInit, OnDestroy {
       project: this.formProgramming.value.project,
       developers: this.formProgramming.value.developers,
       comment: this.formProgramming.value.comment,
-      deleted: false
     }
     this.programmingService.editProgramming(programming);
+    alert("Se actualizó el registro");
     this.router.navigate(['features/programming']);
   }
 
   compareWithFn(item1:any, item2:any){
     return item1 && item2 ? item1.id === item2.id : item1===item2;
+  }
+
+  cancelEdit(){
+    this.router.navigate(['features/programming']);
   }
 
 }

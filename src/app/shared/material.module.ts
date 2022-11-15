@@ -12,6 +12,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule} from '@angular/material/input';
 import {MatSelectModule} from '@angular/material/select';
+import {MatSortModule} from '@angular/material/sort';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 
 @NgModule({
@@ -29,6 +31,8 @@ import {MatSelectModule} from '@angular/material/select';
     MatNativeDateModule,
     MatInputModule,
     MatSelectModule,
+    MatSortModule,
+    MatSlideToggleModule,
   ],
   exports:[
     MatSidenavModule,
@@ -43,6 +47,8 @@ import {MatSelectModule} from '@angular/material/select';
     MatNativeDateModule,
     MatInputModule,
     MatSelectModule,
+    MatSortModule,
+    MatSlideToggleModule,
   ]
 })
 export class MaterialModule { }

@@ -1,8 +1,7 @@
 export interface Developer {
-  id: number,
+  id?: number,
   firstName: string,
   lastName: string,
   photo: string,
   contractDate: Date,
-  deleted: boolean
 }

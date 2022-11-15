@@ -1,47 +1,66 @@
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {catchError, Observable, throwError} from 'rxjs';
 import { Project } from 'src/app/models/project';
-import { ListProjects } from '../../../mocks/dataProject';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProjectService {
-  listProjects:Project[] = ListProjects;
-  private projectsSubject:BehaviorSubject<Project[]>;
+  listProjects!:Project[];
 
-  constructor() {
-    this.projectsSubject = new BehaviorSubject<Project[]>(this.listProjects);
-  }
+  constructor(
+    private http:HttpClient
+  ) { }
 
   getProjects():Observable<Project[]>{
-    return this.projectsSubject.asObservable();
+    return this.http.get<Project[]>(`${environment.api}/project`, {
+      headers: new HttpHeaders({
+        'content-type': 'application/json',
+        'encoding': 'UTF-8'
+      })
+    }).pipe(
+      catchError(this.manejarError)
+    )
   }
 
-  getProject(id:number):Project{
-    let index = this.listProjects.findIndex((item: Project) => item.id === id);
-    return this.listProjects[index];
+  getProject(id:number):Observable<Project>{
+    return this.http.get<Project>(`${environment.api}/project/${id}`,{
+      headers:new HttpHeaders({
+        'content-type': 'application/json',
+        'encoding': 'UTF-8'
+      })
+    }).pipe(
+      catchError(this.manejarError)
+    )
   }
 
   deleteProject(id:number){
-    let index = this.listProjects.findIndex((item: Project) => item.id ===id);
-    if(index > -1){
-      this.listProjects[index].deleted = true;
-    }
-    this.projectsSubject.next(this.listProjects);
+    this.http.delete<Project>(`${environment.api}/project/${id}`).pipe(
+      catchError(this.manejarError)
+    ).subscribe(console.log);
   }
 
   addProject(project:Project){
-    this.listProjects.push(project);
-    this.projectsSubject.next(this.listProjects);
+    this.http.post<Project>(`${environment.api}/project/`, project).pipe(
+      catchError(this.manejarError)
+    ).subscribe(console.log);
   }
 
   editProject(project:Project){
-    let index = this.listProjects.findIndex((item: Project) => item.id === project.id);
-    if(index > -1){
-      this.listProjects[index] = project;
+    this.http.put<Project>(`${environment.api}/project/${project.id}`, project).pipe(
+      catchError(this.manejarError)
+    ).subscribe(console.log);
+  }
+
+  private manejarError(error: HttpErrorResponse){
+    if(error.error instanceof ErrorEvent){
+      console.warn('Error del lado del cliente', error.error.message);
+    }else{
+      console.warn('Error del lado del servidor', error.error.message);
     }
-    this.projectsSubject.next(this.listProjects);
+    return throwError(() => new Error('Error en la comunicacion HTTP'));
   }
 
 }
