@@ -9,6 +9,10 @@ import { environment } from 'src/environments/environment';
 })
 export class ProjectService {
   listProjects!:Project[];
+  headers:HttpHeaders = new HttpHeaders({
+    'content-type': 'application/json',
+    'encoding': 'UTF-8'
+  });
 
   constructor(
     private http:HttpClient
@@ -16,10 +20,7 @@ export class ProjectService {
 
   getProjects():Observable<Project[]>{
     return this.http.get<Project[]>(`${environment.api}/project`, {
-      headers: new HttpHeaders({
-        'content-type': 'application/json',
-        'encoding': 'UTF-8'
-      })
+      headers: this.headers
     }).pipe(
       catchError(this.manejarError)
     )
@@ -27,10 +28,7 @@ export class ProjectService {
 
   getProject(id:number):Observable<Project>{
     return this.http.get<Project>(`${environment.api}/project/${id}`,{
-      headers:new HttpHeaders({
-        'content-type': 'application/json',
-        'encoding': 'UTF-8'
-      })
+      headers: this.headers
     }).pipe(
       catchError(this.manejarError)
     )

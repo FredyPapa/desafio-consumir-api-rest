@@ -9,6 +9,10 @@ import { environment } from 'src/environments/environment';
 })
 export class ProgrammingService {
   listProgrammings!:Programming[];
+  headers:HttpHeaders = new HttpHeaders({
+    'content-type': 'application/json',
+    'encoding': 'UTF-8'
+  });
 
   constructor(
     private http:HttpClient
@@ -16,10 +20,7 @@ export class ProgrammingService {
 
   getProgrammings():Observable<Programming[]>{
     return this.http.get<Programming[]>(`${environment.api}/programming`, {
-      headers: new HttpHeaders({
-        'content-type': 'application/json',
-        'encoding': 'UTF-8'
-      })
+      headers: this.headers
     }).pipe(
       catchError(this.manejarError)
     )
@@ -27,10 +28,7 @@ export class ProgrammingService {
 
   getProgramming(id:number):Observable<Programming>{
     return this.http.get<Programming>(`${environment.api}/programming/${id}`,{
-      headers:new HttpHeaders({
-        'content-type': 'application/json',
-        'encoding': 'UTF-8'
-      })
+      headers: this.headers
     }).pipe(
       catchError(this.manejarError)
     )
